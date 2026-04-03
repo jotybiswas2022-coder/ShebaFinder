@@ -3,34 +3,56 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Account;
-use App\Models\Profile;
+use App\Models\Post;
+use App\Models\Category;
+use App\Models\Setting;
+use App\Models\Slider;
 
 class SiteController extends Controller
 {
-    public function index(){
-        $account = Account::first(); 
-        $donorsCount = Profile::count(); 
-        return view('frontend.index', compact('account', 'donorsCount'));
+    // Homepage
+    public function index()
+    {
+        $settings = Setting::first();
+        $slider = Slider::latest()->first();
+
+        $posts = Post::where('status', '1')->latest()->get();
+        $categories = Category::all();
+
+        return view('frontend.index', compact('posts','categories','settings','slider'));
     }
 
-    public function donorList($bloodGroup = null){
-    if($bloodGroup) {
-        $donors = Profile::where('blood', $bloodGroup)->get();
-    } else {
-        $donors = Profile::all();
+    // Single Post Page
+    public function Post($id)
+    {
+        $post = Post::where('id', $id)
+                    ->where('status', '1')
+                    ->firstOrFail();
+
+        $otherPosts = Post::where('category_id', $post->category_id)
+                          ->where('id', '!=', $post->id)
+                          ->where('status', '1')
+                          ->latest()
+                          ->take(8)
+                          ->get();
+
+        return view('frontend.post.index', compact('post', 'otherPosts'));
     }
 
-    $sortedDonors = $donors->sortBy(function($donor) {
-        if($donor->last_donated) {
-            $nextDate = \Carbon\Carbon::parse($donor->nextDonationDate());
-            $today = now()->startOfDay();
-            return $today->diffInDays($nextDate, false);
-        } else {
-            return 0; // Eligible now -> top
-        }
-    });
+    // Category Wise Posts
+    public function list($id)
+    {
+        $posts = Post::where('category_id', $id)
+                    ->where('status', '1')
+                    ->latest()
+                    ->get();
 
-    return view('frontend.donor_list', compact('donors', 'bloodGroup', 'sortedDonors'));
-}
+        return view('frontend.post.list', compact('posts'));
+    }
+
+    // Contact Page
+    public function contact()
+    {
+        return view('frontend.contact');
+    }
 }

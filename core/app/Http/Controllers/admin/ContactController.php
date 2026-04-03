@@ -8,7 +8,7 @@ use App\Models\Contact;
 
 class ContactController extends Controller
 {
-   function index(){
+    function index(){
         $contacts = Contact::latest()->get();
         return view('backend.contact.index', compact( 'contacts'));
     }

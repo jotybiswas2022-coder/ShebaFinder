@@ -2,44 +2,55 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\admin\DashboardController;
-use App\Http\Controllers\admin\AccountController;
+use App\Http\Controllers\admin\CategoryController;
+use App\Http\Controllers\admin\SettingsController;
 use App\Http\Controllers\admin\ContactController;
-use App\Http\Controllers\admin\DonorController;
+use App\Http\Controllers\admin\SliderController;
+use App\Http\Controllers\admin\PostController;
 
 Route::prefix('admin')->middleware('admin')->group(function () {
 
-    // ===============================
     // Dashboard
-    // ===============================
-    Route::controller(DashboardController::class)->group(function () {
-        Route::get('/', 'index')->name('dashboard.index');
+    Route::get('/', [DashboardController::class, 'index']);
+
+    // workers
+    Route::prefix('workers')->controller(PostController::class)->group(function () {
+        Route::get('/', 'index');
+        Route::get('/create', 'create');       
+        Route::post('/store', 'store');        
+        Route::get('/edit/{id}', 'edit');       
+        Route::post('/update/{id}', 'update')->name('workers.update'); 
+        Route::get('/delete/{id}', 'delete'); 
+        Route::get('/file/{id}', 'viewFile')->name('workers.viewFile');
     });
 
-    // ===============================
-    // Account
-    // ===============================
-    Route::prefix('account')->controller(AccountController::class)->group(function () {
-        Route::get('/', 'index')->name('account.index');
-        Route::get('/edit', 'edit')->name('account.edit');
-        Route::post('/update', 'update')->name('account.update');
+    // Contacts
+    Route::prefix('contacts')->controller(ContactController::class)->group(function () {
+        Route::get('/', 'index');
     });
 
-    // ===============================
-    // Contact
-    // ===============================
-    Route::prefix('contact')->controller(ContactController::class)->group(function () {
-        Route::get('/', 'index')->name('contact.index');
+    // Settings
+    Route::get('/settings', [SettingsController::class, 'index']);
+    Route::post('/settings', [SettingsController::class, 'update']);
+
+    // Categories
+    Route::prefix('category')->controller(CategoryController::class)->group(function () {
+        Route::get('/', 'index');        
+        Route::get('/create', 'create');      
+        Route::post('/store', 'store');       
+        Route::get('/edit/{id}', 'edit');  
+        Route::post('/update/{id}', 'update');  
+        Route::get('/delete/{id}', 'delete');   
     });
 
-    // ===============================
-    // Donor List CRUD
-    // ===============================
-    Route::prefix('donor_list')->controller(DonorController::class)->group(function () {
-        Route::get('/', 'index')->name('donor.index');
-        Route::get('/create', 'create')->name('donor.create');
-        Route::post('/store', 'store')->name('donor.store');
-        Route::get('/edit/{id}', 'edit')->name('donor.edit');
-        Route::post('/update/{id}', 'update')->name('donor.update');
-        Route::delete('/delete/{id}', 'delete')->name('donor.delete');
+    // Sliders
+    Route::prefix('sliders')->controller(SliderController::class)->group(function () {
+        Route::get('/', 'index');
+        Route::get('/create', 'create');       
+        Route::post('/store', 'store');        
+        Route::get('/edit/{id}', 'edit');       
+        Route::post('/update/{id}', 'update'); 
+        Route::get('/delete/{id}', 'delete'); 
     });
+
 });

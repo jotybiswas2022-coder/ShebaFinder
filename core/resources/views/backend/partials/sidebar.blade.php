@@ -60,36 +60,44 @@ use Illuminate\Support\Str;
 
 <!-- Sidebar + Content -->
 <div class="row m-0" style="min-height: 100vh;">
+
     <!-- Sidebar -->
     <div class="col-md-3 p-0">
-    <div class="sidebar">
-        <ul class="sidebar-menu">
-            <li>
-                <a href="{{ url('/admin/account') }}"
-                class="{{ request()->is('admin/account') ? 'active' : '' }}">
-                    <i class="bi bi-person-circle"></i>
-                    <span>Account</span>
-                </a>
-            </li>
-
-            <li>
-                <a href="{{ url('/admin/donor_list') }}"
-                class="{{ request()->is('admin/donor_list') ? 'active' : '' }}">
-                    <i class="bi bi-people-fill"></i> 
-                    <span>Donor List</span>
-                </a>
-            </li>
-
-            <li>
-                <a href="{{ url('/admin/contact') }}"
-                class="{{ request()->is('admin/contact') ? 'active' : '' }}">
-                    <i class="bi bi-envelope-fill"></i> 
-                    <span>Contact</span>
-                </a>
-            </li>
-        </ul>
+        <div class="sidebar">
+            <ul class="sidebar-menu">
+                <li>
+                    <a href="/admin/sliders" class="{{ request()->is('admin/sliders') ? 'active' : '' }}">
+                        <i class="bi bi-images"></i>
+                        <span>Sliders</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/admin/workers" class="{{ request()->is('admin/workers') ? 'active' : '' }}">
+                        <i class="bi bi-person"></i>
+                        <span>Workers</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/admin/category" class="{{ request()->is('admin/category') ? 'active' : '' }}">
+                        <i class="bi bi-tags"></i>
+                        <span>Categories</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/admin/contacts" class="{{ request()->is('admin/contacts') ? 'active' : '' }}">
+                        <i class="bi bi-envelope"></i>
+                        <span>Contacts</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/admin/settings" class="{{ request()->is('admin/settings') ? 'active' : '' }}">
+                        <i class="bi bi-gear"></i>
+                        <span>General Settings</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
     </div>
-</div>
 
     <!-- Content -->
     <div class="col-md-9 p-4">
