@@ -19,7 +19,7 @@ Route::prefix('admin')->middleware('admin')->group(function () {
         Route::get('/create', 'create');       
         Route::post('/store', 'store');        
         Route::get('/edit/{id}', 'edit');       
-        Route::post('/update/{id}', 'update')->name('workers.update'); 
+        Route::put('/update/{id}', 'update')->name('workers.update'); 
         Route::get('/delete/{id}', 'delete'); 
         Route::get('/file/{id}', 'viewFile')->name('workers.viewFile');
     });

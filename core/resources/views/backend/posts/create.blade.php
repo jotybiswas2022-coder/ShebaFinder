@@ -30,11 +30,11 @@
                     <!-- Name -->
                     <div class="col-md-6">
                         <label class="form-label fw-semibold">
-                            <i class="bi bi-box-seam me-1 text-secondary"></i>
+                            <i class="bi bi-person me-1 text-secondary"></i>
                             Name <span class="text-danger">*</span>
                         </label>
                         <div class="input-group">
-                            <span class="input-group-text bg-light"><i class="bi bi-box"></i></span>
+                            <span class="input-group-text bg-light"><i class="bi bi-person"></i></span>
                             <input type="text" class="form-control" name="title" placeholder="Enter Name" required>
                         </div>
                     </div>
@@ -56,28 +56,28 @@
                     <!-- Contact Number -->
                     <div class="col-md-6">
                         <label class="form-label fw-semibold">
-                            <i class="bi bi-box-seam me-1 text-secondary"></i>
+                            <i class="bi bi-telephone me-1 text-secondary"></i>
                             Contact Number <span class="text-danger">*</span>
                         </label>
                         <div class="input-group">
-                            <span class="input-group-text bg-light"><i class="bi bi-box"></i></span>
+                            <span class="input-group-text bg-light"><i class="bi bi-phone"></i></span>
                             <input type="number" class="form-control" name="contact_number" placeholder="Enter Contact Number" required>
                         </div>
                     </div>
 
-                     <!-- Division -->
+                    <!-- Division (FIXED) -->
                     <div class="col-md-6">
                         <label class="form-label fw-semibold">
-                            <i class="bi bi-tags me-1 text-secondary"></i>
-                           Division <span class="text-danger">*</span>
+                            <i class="bi bi-geo-alt me-1 text-secondary"></i>
+                            Division <span class="text-danger">*</span>
                         </label>
-                        <select name="category_id" class="form-select" required>
-                            <option value="">Select Category</option>
-                            <option value="khulna">Khulna</option>
-                            <option value="dhaka">Dhaka</option>
-                            <option value="chittagong">Chittagong</option>
-                            <option value="rajshahi">Rajshahi</option>  
-                            <option value="sylhet">Sylhet</option>
+                        <select name="division" class="form-select" required>
+                            <option value="">Select Division</option>
+                            <option value="Khulna">Khulna</option>
+                            <option value="Dhaka">Dhaka</option>
+                            <option value="Chittagong">Chittagong</option>
+                            <option value="Rajshahi">Rajshahi</option>
+                            <option value="Sylhet">Sylhet</option>
                         </select>
                     </div>
 
@@ -98,7 +98,7 @@
                     <div class="col-md-6">
                         <label class="form-label fw-semibold">
                             <i class="bi bi-image me-1 text-secondary"></i>
-                            Post File <span class="text-danger">*</span>
+                            Profile Image <span class="text-danger">*</span>
                         </label>
                         <input type="file"
                                class="form-control"
@@ -118,7 +118,7 @@
                     <!-- Submit -->
                     <div class="col-12 mt-2">
                         <button type="submit" class="btn btn-success px-4 rounded-pill w-100 w-md-auto">
-                            <i class="bi bi-check-circle me-1"></i> Save Post
+                            <i class="bi bi-check-circle me-1"></i> Save Worker
                         </button>
                     </div>
 
@@ -140,7 +140,6 @@ document.getElementById('file').addEventListener('change', function(e) {
     if (!file) return;
 
     const fileType = file.type;
-
     const allowedImages = ['image/jpeg','image/png','image/gif','image/webp'];
 
     if (allowedImages.includes(fileType)) {
@@ -160,7 +159,6 @@ document.getElementById('file').addEventListener('change', function(e) {
         return;
     }
 
-    // invalid file
     Swal.fire({
         icon: 'error',
         title: 'Invalid File',
@@ -172,28 +170,39 @@ document.getElementById('file').addEventListener('change', function(e) {
     preview.classList.add('d-none');
 });
 
-// Laravel session messages
+// Laravel alerts
 @if(session('success'))
-Swal.fire({icon:'success', title:'Success!', text:"{{ session('success') }}", confirmButtonColor:'#4f46e5'});
+Swal.fire({icon:'success', title:'Success!', text:"{{ session('success') }}"});
 @endif
 
 @if(session('error'))
-Swal.fire({icon:'error', title:'Error!', text:"{{ session('error') }}", confirmButtonColor:'#4f46e5'});
+Swal.fire({icon:'error', title:'Error!', text:"{{ session('error') }}"});
 @endif
 
 @if ($errors->any())
 let errorMessages = @json($errors->all());
-Swal.fire({icon:'error', title:'Validation Error', html:errorMessages.join('<br>'), confirmButtonColor:'#4f46e5'});
+Swal.fire({icon:'error', title:'Validation Error', html:errorMessages.join('<br>')});
 @endif
 </script>
 
 <style>
 .product-card { border-radius: 14px; }
-.form-control:focus, .form-select:focus { border-color:#4f46e5; box-shadow:0 0 0 0.15rem rgba(79,70,229,0.25);}
+.form-control:focus, .form-select:focus {
+    border-color:#4f46e5;
+    box-shadow:0 0 0 0.15rem rgba(79,70,229,0.25);
+}
 .btn-success { transition:.25s; }
-.btn-success:hover { background:#4f46e5; border-color:#4f46e5; }
-@media (max-width: 992px) { .card-body { padding:20px; } }
-@media (max-width: 576px) { .row.g-3 > [class*='col-'] { width:100%; } .btn-success { width:100%; } }
+.btn-success:hover {
+    background:#4f46e5;
+    border-color:#4f46e5;
+}
+@media (max-width: 992px) {
+    .card-body { padding:20px; }
+}
+@media (max-width: 576px) {
+    .row.g-3 > [class*='col-'] { width:100%; }
+    .btn-success { width:100%; }
+}
 </style>
 
 @endsection

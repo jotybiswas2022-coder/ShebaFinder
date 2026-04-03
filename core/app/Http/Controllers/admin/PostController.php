@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\admin;
+namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
 {
-
+    // ================= INDEX =================
     public function index()
     {
         $posts = Post::latest()->get();
@@ -19,93 +19,95 @@ class PostController extends Controller
         return view('backend.posts.index', compact('posts','categories'));
     }
 
-
+    // ================= CREATE =================
     public function create()
     {
         $categories = Category::all();
         return view('backend.posts.create', compact('categories'));
     }
 
-
+    // ================= STORE =================
     public function store(Request $request)
-{
-    $request->validate([
-        'title'       => 'required|string|max:255',
-        'category_id' => 'required|exists:categories,id',
-        'number'      => 'required|string|max:255',
-        'division'    => 'required|string|max:255',
-        'status'      => 'required|in:0,1',
-        'file'        => 'required|file|mimetypes:image/jpeg,image/png,image/gif,image/webp,video/mp4|max:512000',
-    ]);
+    {
+        $request->validate([
+            'title'           => 'required|string|max:255',
+            'category_id'     => 'required|exists:categories,id',
+            'contact_number'  => 'required|string|max:20',
+            'division'        => 'required|string|max:100',
+            'status'          => 'required|in:0,1',
+            'file'            => 'required|file|mimetypes:image/jpeg,image/png,image/gif,image/webp,video/mp4|max:512000',
+        ]);
 
-    $filePath = null;
-    if ($request->hasFile('file')) {
-        $file = $request->file('file');
-        $mime = $file->getMimeType();
+        $filePath = null;
 
-        // safety check
-        if(!in_array($mime, ['video/mp4','image/jpeg','image/png','image/gif','image/webp'])){
-            return back()->with('error','Only Image and MP4 video allowed!');
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+            $mime = $file->getMimeType();
+
+            // Extra safety
+            if (!in_array($mime, ['video/mp4','image/jpeg','image/png','image/gif','image/webp'])) {
+                return back()->with('error','Only Image and MP4 video allowed!');
+            }
+
+            $filePath = $file->store('posts', 'public');
         }
 
-        $filePath = $file->store('posts','public');
+        Post::create([
+            'title'           => $request->title,
+            'category_id'     => $request->category_id,
+            'contact_number'  => $request->contact_number,
+            'division'        => $request->division,
+            'status'          => (int) $request->status,
+            'file'            => $filePath,
+        ]);
+
+        return redirect('/admin/workers')->with('success','Worker added successfully!');
     }
 
-    Post::create([
-        'title'       => $request->title,
-        'category_id' => $request->category_id,
-        'number'      => $request->number,
-        'division'    => $request->division,
-        'status'      => (int)$request->status,
-        'file'        => $filePath,
-    ]);
-
-    return redirect('/admin/workers')->with('success','Worker added successfully!');
-}
-
-
-
+    // ================= UPDATE =================
     public function update(Request $request, $id)
     {
         $post = Post::findOrFail($id);
 
         $request->validate([
-            'title' => 'required|string|max:255',
-            'category_id' => 'required|exists:categories,id',
-            'number' => 'required|string|max:255',
-            'division' => 'required|string|max:255',
-            'status' => 'required|in:0,1',
-            'file' => 'nullable|mimes:jpg,jpeg,png,gif,webp,mp4|max:512000',
+            'title'           => 'required|string|max:255',
+            'category_id'     => 'required|exists:categories,id',
+            'contact_number'  => 'required|string|max:20',
+            'division'        => 'required|string|max:100',
+            'status'          => 'required|in:0,1',
+            'file'            => 'nullable|file|mimetypes:image/jpeg,image/png,image/gif,image/webp,video/mp4|max:512000',
         ]);
 
-        if($request->hasFile('file')){
+        // File update
+        if ($request->hasFile('file')) {
 
             $file = $request->file('file');
-            $ext  = strtolower($file->getClientOriginalExtension());
+            $mime = $file->getMimeType();
 
-            if($file->getMimeType() && str_contains($file->getMimeType(),'video') && $ext !== 'mp4'){
-                return redirect()->back()->with('error','Only MP4 video allowed!');
+            if (!in_array($mime, ['video/mp4','image/jpeg','image/png','image/gif','image/webp'])) {
+                return response()->json(['status' => false, 'message' => 'Invalid file type']);
             }
 
-            if($post->file && Storage::disk('public')->exists($post->file)){
+            if ($post->file && Storage::disk('public')->exists($post->file)) {
                 Storage::disk('public')->delete($post->file);
             }
 
             $post->file = $file->store('posts','public');
         }
 
-        $post->title = $request->title;
-        $post->category_id = $request->category_id;
-        $post->number = $request->number;
-        $post->division = $request->division;
-        $post->status = $request->status;
-        $post->save();
+        $post->update([
+            'title'           => $request->title,
+            'category_id'     => $request->category_id,
+            'contact_number'  => $request->contact_number,
+            'division'        => $request->division,
+            'status'          => (int) $request->status,
+        ]);
 
+        // 🔥 IMPORTANT: return JSON
         return redirect('/admin/workers')->with('success','Worker updated successfully!');
     }
 
-
-
+    // ================= DELETE =================
     public function delete($id)
     {
         $post = Post::findOrFail($id);
@@ -116,11 +118,10 @@ class PostController extends Controller
 
         $post->delete();
 
-        return redirect('/admin/posts')->with('success','Post deleted successfully!');
+        return redirect('/admin/workers')->with('success','Worker deleted successfully!');
     }
 
-
-
+    // ================= VIEW FILE =================
     public function viewFile($id)
     {
         $post = Post::findOrFail($id);
@@ -137,5 +138,4 @@ class PostController extends Controller
 
         return response()->file($filePath);
     }
-
 }

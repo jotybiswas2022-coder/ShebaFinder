@@ -29,6 +29,13 @@
                     </a>
                 </li>
 
+                <!-- contact -->
+                <li class="nav-item">
+                    <a class="nav-link top-nav-link {{ request()->is('contact') ? 'active-link' : '' }}" href="{{ url('/contact') }}">
+                        <i class="bi bi-envelope me-1"></i> Contact
+                    </a>
+                </li>
+
                 @auth
                     <!-- Admin Panel (only for admin users) -->
                     @if(auth()->user()->is_admin == 1)

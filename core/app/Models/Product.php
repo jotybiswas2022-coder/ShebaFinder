@@ -9,17 +9,17 @@ class Product extends Model
     protected $fillable = [
         'name',
         'category_id',
-        'base_price',
-        'price',
-        'discount',
-        'stock',
-        'details',
+        'number',
         'status',
-        'image'
+        'image',
+        'division' 
     ];
 
-    public function ProductCategory()
+    /**
+     * Category Relationship
+     */
+    public function category()
     {
-        return $this->belongsTo(Category::class, 'category_id', 'id');
+        return $this->belongsTo(Category::class, 'category_id');
     }
 }

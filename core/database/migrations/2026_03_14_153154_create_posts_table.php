@@ -12,14 +12,32 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('posts', function (Blueprint $table) {
+
             $table->id();
+
+            // Basic Info
             $table->string('title');
-            $table->integer('category_id');
-            $table->string('number');
-            $table->string('division');
+
+            // Foreign Key (better than integer)
+            $table->foreignId('category_id')
+                  ->constrained()
+                  ->cascadeOnDelete();
+
+            // Contact Number (renamed for clarity)
+            $table->string('contact_number', 20);
+
+            // Location
+            $table->string('division', 100);
+
+            // File (image/video)
             $table->string('file')->nullable();
-            $table->tinyInteger('status')->default(1);
+
+            // Status
+            $table->boolean('status')->default(true);
+
+            // Timestamps
             $table->timestamps();
+
         });
     }
 

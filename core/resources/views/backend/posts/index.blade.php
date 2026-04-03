@@ -33,7 +33,7 @@
         <div class="card-body p-2">
 
             <div class="mb-3">
-                <input type="text" id="postSearch" class="form-control" placeholder="Search posts by title or category...">
+                <input type="text" id="postSearch" class="form-control" placeholder="Search workers by name or category...">
             </div>
 
             <div class="table-responsive">
@@ -42,12 +42,13 @@
                     <thead class="table-light">
                         <tr>
                             <th style="width:50px;">#</th>
-                            <th style="width:300px;">Title</th>
+                            <th style="width:150px;">Name</th>
                             <th style="width:120px;">Category</th>
+                            <th style="width:150px;">Contact Number</th>
+                            <th style="width:120px;">Division</th>
                             <th style="width:100px;">File</th>
                             <th style="width:120px;">Status</th>
                             <th style="width:200px;">Actions</th>
-                            <th style="width:200px;">Date & Time</th>
                         </tr>
                     </thead>
 
@@ -57,6 +58,8 @@
                             <td>{{ $loop->iteration }}</td>
                             <td class="fw-medium text-center">{{ $post->title }}</td>
                             <td>{{ $post->PostCategory->name ?? 'No Category' }}</td>
+                            <td>{{ $post->contact_number }}</td>
+                            <td>{{ $post->division }}</td>
 
                             <td>
                                 @if($post->file)
@@ -128,15 +131,6 @@
                                         onclick="confirmation({{ $post->id }})">
                                     <i class="bi bi-trash"></i> Delete
                                 </button>
-                            </td>
-                            <td>
-                                <span class="badge date-badge bg-success">
-                                        {{ \Carbon\Carbon::parse($post->created_at)->timezone('Asia/Dhaka')->format('d M Y') }}
-                                    </span>
-                                    <br>
-                                    <span class="badge time-badge bg-primary">
-                                        {{ \Carbon\Carbon::parse($post->created_at)->timezone('Asia/Dhaka')->format('h:i A') }}
-                                    </span>
                             </td>
                         </tr>
 
