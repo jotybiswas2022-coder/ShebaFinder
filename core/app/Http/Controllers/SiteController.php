@@ -40,14 +40,32 @@ class SiteController extends Controller
     }
 
     // Category Wise Posts
-    public function list($id)
+    public function list(Request $request, $id)
     {
-        $posts = Post::where('category_id', $id)
-                    ->where('status', '1')
-                    ->latest()
-                    ->get();
+        $query = Post::query();
 
-        return view('frontend.post.list', compact('posts'));
+        // 🔍 Search by Name
+        if ($request->name) {
+            $query->where('title', 'LIKE', '%' . $request->name . '%');
+        }
+
+        // 🔍 Search by Category
+        if ($request->category_id) {
+            $query->where('category_id', $request->category_id);
+        }
+
+        // 🔍 Search by Division
+        if ($request->division) {
+            $query->where('division', $request->division);
+        }
+
+        $posts = $query->where('category_id', $id)
+                       ->where('status', '1')
+                       ->latest()
+                       ->get();
+        $categories = Category::all();
+
+        return view('frontend.post.list', compact('posts', 'categories'));
     }
 
     // Contact Page

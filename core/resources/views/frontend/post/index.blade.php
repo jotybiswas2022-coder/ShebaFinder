@@ -806,9 +806,10 @@
 
 					<hr class="rule-red mb-3">
 
-					<div class="article-body-text">
-						{!! $post->details !!}
-					</div>
+                    <h3 class="np-card-title">Name: {{ $post->title ?? 'No Name' }}</h3>
+				<h3 class="np-card-title">Category: {{ $post->PostCategory->name ?? 'No Category' }}</h3>
+              <h3 class="np-card-title">Division: {{ $post->division ?? 'No Division' }}</h3>
+              <h3 class="np-card-title">Contact Number: {{ $post->contact_number ?? 'No Contact Number' }}</h3>
 
 				</div>
 

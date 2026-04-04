@@ -29,16 +29,8 @@ class ProfileController extends Controller
     {
         $categories = Category::all();
 
-        $profile = Post::firstOrCreate(
-            ['user_id' => Auth::id()],
-            [
-                'title'          => Auth::user()->name,
-                'division'       => '',
-                'category_id'    => Category::first()?->id ?? 1,
-                'contact_number' => '',
-                'status'         => 0, // pending approval by default
-            ]
-        );
+        // profile থাকলে আনবে, না থাকলে null
+        $profile = Post::where('user_id', Auth::id())->first();
 
         return view('frontend.profile.index', compact('profile', 'categories'));
     }
@@ -51,16 +43,12 @@ class ProfileController extends Controller
         $categories = Category::all();
         $divisions  = $this->divisions;
 
-        $profile = Post::firstOrCreate(
-            ['user_id' => Auth::id()],
-            [
-                'title'          => Auth::user()->name,
-                'division'       => '',
-                'category_id'    => Category::first()?->id ?? 1,
-                'contact_number' => '',
-                'status'         => 0,
-            ]
-        );
+        // profile না থাকলে empty object বানাও (null crash fix)
+        $profile = Post::where('user_id', Auth::id())->first();
+
+        if (!$profile) {
+            $profile = new Post();
+        }
 
         return view('frontend.profile.edit', compact('profile', 'categories', 'divisions'));
     }
@@ -74,7 +62,7 @@ class ProfileController extends Controller
 
         $validator = Validator::make($request->all(), [
             'title'          => 'required|string|max:255',
-            'category_id'    => 'required|exists:categories,id',
+            'category_id'    => 'nullable|exists:categories,id', // ✅ optional
             'contact_number' => 'required|string|max:20',
             'division'       => 'required|string|max:100',
             'file'           => 'nullable|mimes:jpeg,png,jpg,gif,webp,mp4|max:20480',
@@ -91,36 +79,37 @@ class ProfileController extends Controller
             return back()->withErrors($validator)->withInput();
         }
 
-        // user_id দিয়ে profile খোঁজো, না থাকলে তৈরি করো
-        $profile = Post::firstOrCreate(
-            ['user_id' => Auth::id()],
-            [
-                'title'          => Auth::user()->name,
-                'division'       => '',
-                'category_id'    => Category::first()?->id ?? 1,
-                'contact_number' => '',
-                'status'         => 0,
-            ]
-        );
+        // profile খুঁজো
+        $profile = Post::where('user_id', Auth::id())->first();
 
-        // File handling
-        if ($request->hasFile('file')) {
-            $filePath = $request->file('file')->store('posts', 'public');
-        } else {
-            $filePath = $profile->file;
+        // না থাকলে নতুন create করো
+        if (!$profile) {
+            $profile = new Post();
+            $profile->user_id = Auth::id();
+            $profile->status  = 0;
         }
 
-        $profile->update([
-            'title'          => $request->title,
-            'category_id'    => $request->category_id,
-            'contact_number' => $request->contact_number,
-            'division'       => $request->division,
-            'file'           => $filePath,
-        ]);
+        // File upload
+        if ($request->hasFile('file')) {
+            $filePath = $request->file('file')->store('posts', 'public');
+            $profile->file = $filePath;
+        }
 
-        // AJAX request হলে JSON response
-        if ($request->ajax() || $request->wantsJson()) {
-            return response()->json(['status' => true, 'message' => 'Profile updated successfully.']);
+        // ❗ category null হলে fallback দাও (DB error fix)
+        $categoryId = $request->category_id ?? Category::first()?->id;
+
+        $profile->title          = $request->title;
+        $profile->category_id    = $categoryId;
+        $profile->contact_number = $request->contact_number;
+        $profile->division       = $request->division;
+
+        $profile->save();
+
+        if ($isAjax) {
+            return response()->json([
+                'status'  => true,
+                'message' => 'Profile updated successfully.'
+            ]);
         }
 
         return redirect('/profile')->with('success', 'Profile updated successfully.');
