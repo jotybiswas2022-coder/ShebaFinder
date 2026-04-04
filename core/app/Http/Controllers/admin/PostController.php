@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Category;
 use App\Models\Post;
+use App\Models\User;
 use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
@@ -13,10 +14,11 @@ class PostController extends Controller
     // ================= INDEX =================
     public function index()
     {
-        $posts = Post::latest()->get();
+        // সব workers দেখাও — user_id আছে বা নেই উভয়ই
+        $posts      = Post::with('user')->latest()->get();
         $categories = Category::all();
 
-        return view('backend.posts.index', compact('posts','categories'));
+        return view('backend.posts.index', compact('posts', 'categories'));
     }
 
     // ================= CREATE =================
@@ -34,7 +36,7 @@ class PostController extends Controller
             'category_id'     => 'required|exists:categories,id',
             'contact_number'  => 'required|string|max:20',
             'division'        => 'required|string|max:100',
-            'status'          => 'required|in:0,1',
+            'status'          => 'nullable|in:0,1',
             'file'            => 'required|file|mimetypes:image/jpeg,image/png,image/gif,image/webp,video/mp4|max:512000',
         ]);
 
@@ -44,24 +46,23 @@ class PostController extends Controller
             $file = $request->file('file');
             $mime = $file->getMimeType();
 
-            // Extra safety
-            if (!in_array($mime, ['video/mp4','image/jpeg','image/png','image/gif','image/webp'])) {
-                return back()->with('error','Only Image and MP4 video allowed!');
+            if (!in_array($mime, ['video/mp4', 'image/jpeg', 'image/png', 'image/gif', 'image/webp'])) {
+                return back()->with('error', 'Only Image and MP4 video allowed!');
             }
 
             $filePath = $file->store('posts', 'public');
         }
 
         Post::create([
-            'title'           => $request->title,
-            'category_id'     => $request->category_id,
-            'contact_number'  => $request->contact_number,
-            'division'        => $request->division,
-            'status'          => (int) $request->status,
-            'file'            => $filePath,
+            'title'          => $request->title,
+            'category_id'    => $request->category_id,
+            'contact_number' => $request->contact_number,
+            'division'       => $request->division,
+            'status'         => (int) ($request->status ?? 0),
+            'file'           => $filePath,
         ]);
 
-        return redirect('/admin/workers')->with('success','Worker added successfully!');
+        return redirect('/admin/workers')->with('success', 'Worker added successfully!');
     }
 
     // ================= UPDATE =================
@@ -70,21 +71,19 @@ class PostController extends Controller
         $post = Post::findOrFail($id);
 
         $request->validate([
-            'title'           => 'required|string|max:255',
-            'category_id'     => 'required|exists:categories,id',
-            'contact_number'  => 'required|string|max:20',
-            'division'        => 'required|string|max:100',
-            'status'          => 'required|in:0,1',
-            'file'            => 'nullable|file|mimetypes:image/jpeg,image/png,image/gif,image/webp,video/mp4|max:512000',
+            'title'          => 'required|string|max:255',
+            'category_id'    => 'required|exists:categories,id',
+            'contact_number' => 'required|string|max:20',
+            'division'       => 'required|string|max:100',
+            'status'         => 'nullable|in:0,1',
+            'file'           => 'nullable|file|mimetypes:image/jpeg,image/png,image/gif,image/webp,video/mp4|max:512000',
         ]);
 
-        // File update
         if ($request->hasFile('file')) {
-
             $file = $request->file('file');
             $mime = $file->getMimeType();
 
-            if (!in_array($mime, ['video/mp4','image/jpeg','image/png','image/gif','image/webp'])) {
+            if (!in_array($mime, ['video/mp4', 'image/jpeg', 'image/png', 'image/gif', 'image/webp'])) {
                 return response()->json(['status' => false, 'message' => 'Invalid file type']);
             }
 
@@ -92,19 +91,18 @@ class PostController extends Controller
                 Storage::disk('public')->delete($post->file);
             }
 
-            $post->file = $file->store('posts','public');
+            $post->file = $file->store('posts', 'public');
         }
 
         $post->update([
-            'title'           => $request->title,
-            'category_id'     => $request->category_id,
-            'contact_number'  => $request->contact_number,
-            'division'        => $request->division,
-            'status'          => (int) $request->status,
+            'title'          => $request->title,
+            'category_id'    => $request->category_id,
+            'contact_number' => $request->contact_number,
+            'division'       => $request->division,
+            'status'         => (int) ($request->status ?? 0),
         ]);
 
-        // 🔥 IMPORTANT: return JSON
-        return redirect('/admin/workers')->with('success','Worker updated successfully!');
+        return redirect('/admin/workers')->with('success', 'Worker updated successfully!');
     }
 
     // ================= DELETE =================
@@ -118,7 +116,7 @@ class PostController extends Controller
 
         $post->delete();
 
-        return redirect('/admin/workers')->with('success','Worker deleted successfully!');
+        return redirect('/admin/workers')->with('success', 'Worker deleted successfully!');
     }
 
     // ================= VIEW FILE =================

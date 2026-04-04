@@ -20,7 +20,7 @@
                     {{ $posts->count() }} Workers
                 </span>
             </h2>
-            <small class="text-muted">Manage all your workers efficiently</small>
+            <small class="text-muted">সকল workers (user-linked এবং manually added)</small>
         </div>
         <div class="col-md-6 text-end">
             <a href="{{ url('admin/workers/create') }}" class="btn btn-primary">
@@ -33,7 +33,7 @@
         <div class="card-body p-2">
 
             <div class="mb-3">
-                <input type="text" id="postSearch" class="form-control" placeholder="Search workers by name or category...">
+                <input type="text" id="postSearch" class="form-control" placeholder="Search workers by name, email or category...">
             </div>
 
             <div class="table-responsive">
@@ -43,6 +43,7 @@
                         <tr>
                             <th style="width:50px;">#</th>
                             <th style="width:150px;">Name</th>
+                            <th style="width:170px;">Account (Email)</th>
                             <th style="width:120px;">Category</th>
                             <th style="width:150px;">Contact Number</th>
                             <th style="width:120px;">Division</th>
@@ -57,58 +58,57 @@
                         <tr>
                             <td>{{ $loop->iteration }}</td>
                             <td class="fw-medium text-center">{{ $post->title }}</td>
+                            <td class="text-muted small">
+                                @if($post->user)
+                                    <i class="bi bi-person-fill text-primary me-1"></i>
+                                    {{ $post->user->email }}
+                                @else
+                                    <span class="text-muted">—</span>
+                                @endif
+                            </td>
                             <td>{{ $post->PostCategory->name ?? 'No Category' }}</td>
                             <td>{{ $post->contact_number }}</td>
                             <td>{{ $post->division }}</td>
 
                             <td>
                                 @if($post->file)
-
                                     @php
                                         $ext = strtolower(pathinfo($post->file, PATHINFO_EXTENSION));
                                         $videoExtensions = ['mp4','webm','ogg','asf','avi','flv','mkv'];
                                         $imageExtensions = ['jpg','jpeg','png','gif','webp'];
-
                                         $isImage = in_array($ext, $imageExtensions);
                                         $isVideo = in_array($ext, $videoExtensions);
                                     @endphp
 
                                     @if($isImage)
-
-                                        <a href="#" 
+                                        <a href="#"
                                            class="media-preview"
                                            data-bs-toggle="modal"
                                            data-bs-target="#mediaModal"
                                            data-type="image"
                                            data-src="{{ config('app.storage_url') }}{{ $post->file }}">
-
                                             <img src="{{ config('app.storage_url') }}{{ $post->file }}"
                                                  class="img-thumbnail"
                                                  style="width:50px;height:50px;object-fit:cover;">
                                         </a>
-
                                     @elseif($isVideo)
-
                                         <a href="#"
                                            class="media-preview"
                                            data-bs-toggle="modal"
                                            data-bs-target="#mediaModal"
                                            data-type="video"
                                            data-src="{{ config('app.storage_url') }}{{ $post->file }}">
-
                                             <video class="img-thumbnail"
                                                    style="width:50px;height:50px;object-fit:cover;"
                                                    src="{{ config('app.storage_url') }}{{ $post->file }}"
                                                    muted>
                                             </video>
                                         </a>
-
                                     @else
                                         <span class="text-muted">Unsupported File</span>
                                     @endif
-
                                 @else
-                                    <span class="text-muted">No Image/Video</span>
+                                    <span class="text-muted">No File</span>
                                 @endif
                             </td>
 
@@ -116,7 +116,7 @@
                                 @if($post->status == 1)
                                     <span class="badge bg-success">Active</span>
                                 @else
-                                    <span class="badge bg-danger">Inactive</span>
+                                    <span class="badge bg-warning text-dark">Pending</span>
                                 @endif
                             </td>
 
@@ -138,7 +138,10 @@
 
                         @empty
                         <tr>
-                            <td colspan="7" class="text-muted">No posts found</td>
+                            <td colspan="9" class="text-muted py-4">
+                                <i class="bi bi-inbox fs-4 d-block mb-1"></i>
+                                কোনো worker প্রোফাইল তৈরি করেননি এখনো।
+                            </td>
                         </tr>
                         @endforelse
                     </tbody>
@@ -155,27 +158,17 @@
 <div class="modal fade" id="mediaModal" tabindex="-1">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content border-0 shadow-lg rounded-4">
-
             <div class="modal-header">
                 <h5 class="modal-title">Media Preview</h5>
                 <button class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-
             <div class="modal-body text-center">
-
                 <img id="mediaImage" class="img-fluid d-none" style="max-height:500px;">
-
                 <video id="mediaVideo" class="img-fluid d-none" controls style="max-height:500px;">
                     <source id="mediaVideoSource">
                 </video>
-
-                <iframe id="mediaIframe"
-                        class="d-none"
-                        style="width:100%;height:500px;border:0;">
-                </iframe>
-
+                <iframe id="mediaIframe" class="d-none" style="width:100%;height:500px;border:0;"></iframe>
             </div>
-
         </div>
     </div>
 </div>
@@ -194,8 +187,8 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('.media-preview').forEach(el => {
         el.addEventListener('click', function () {
             const type = el.dataset.type;
-            const src = el.dataset.src;
-            const ext = src.split('.').pop().toLowerCase();
+            const src  = el.dataset.src;
+            const ext  = src.split('.').pop().toLowerCase();
 
             mediaImage.classList.add('d-none');
             mediaVideo.classList.add('d-none');
@@ -228,50 +221,47 @@ document.addEventListener('DOMContentLoaded', function () {
     // ================= DELETE CONFIRMATION =================
     window.confirmation = function (id) {
         Swal.fire({
-            title: 'Delete Post',
-            text: 'Are you sure you want to delete this post?',
+            title: 'Delete Worker',
+            text: 'এই worker কে delete করতে চান?',
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#d33',
             cancelButtonColor: '#6c757d',
-            confirmButtonText: 'Yes, delete it'
+            confirmButtonText: 'হ্যাঁ, Delete করো',
+            cancelButtonText: 'বাতিল'
         }).then((result) => {
             if (result.isConfirmed) {
-                window.location.href = '/admin/posts/delete/' + id;
+                window.location.href = '/admin/workers/delete/' + id;
             }
         });
     }
 
     // ================= LIVE SEARCH =================
     const postSearch = document.getElementById('postSearch');
-    const tableRows = document.querySelectorAll('table tbody tr');
+    const tableRows  = document.querySelectorAll('table tbody tr:not([id])');
 
     postSearch.addEventListener('keyup', function () {
         const query = this.value.toLowerCase().trim();
 
         tableRows.forEach(row => {
-            const title = row.querySelector('td:nth-child(2)')?.textContent.toLowerCase() || '';
-            const category = row.querySelector('td:nth-child(3)')?.textContent.toLowerCase() || '';
+            const name     = row.querySelector('td:nth-child(2)')?.textContent.toLowerCase() || '';
+            const email    = row.querySelector('td:nth-child(3)')?.textContent.toLowerCase() || '';
+            const category = row.querySelector('td:nth-child(4)')?.textContent.toLowerCase() || '';
 
-            if (title.includes(query) || category.includes(query)) {
-                row.style.display = '';
-            } else {
-                row.style.display = 'none';
-            }
+            row.style.display = (name.includes(query) || email.includes(query) || category.includes(query)) ? '' : 'none';
         });
 
-        // যদি কোনো রো না থাকে
         const visibleRows = Array.from(tableRows).filter(r => r.style.display !== 'none');
+        const noRow = document.getElementById('noPostsRow');
         if (visibleRows.length === 0) {
-            if (!document.getElementById('noPostsRow')) {
+            if (!noRow) {
                 const tbody = document.querySelector('table tbody');
-                const noRow = document.createElement('tr');
-                noRow.id = 'noPostsRow';
-                noRow.innerHTML = '<td colspan="7" class="text-muted text-center">No posts found</td>';
-                tbody.appendChild(noRow);
+                const emptyRow = document.createElement('tr');
+                emptyRow.id = 'noPostsRow';
+                emptyRow.innerHTML = '<td colspan="9" class="text-muted text-center py-3">কোনো worker পাওয়া যায়নি।</td>';
+                tbody.appendChild(emptyRow);
             }
         } else {
-            const noRow = document.getElementById('noPostsRow');
             if (noRow) noRow.remove();
         }
     });
@@ -281,56 +271,23 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 <style>
-
-.table-hover tbody tr:hover{
-    background-color:rgba(13,110,253,0.05);
-    transition:.2s;
+.table-hover tbody tr:hover {
+    background-color: rgba(13,110,253,0.05);
+    transition: .2s;
 }
+.card-body { border-radius: 12px; }
+.btn-sm i  { margin-right: 4px; }
+.alert     { border-radius: 12px; font-size: 14px; }
+.fw-medium { font-weight: 500; }
 
-.card-body{
-    border-radius:12px;
+@media (max-width: 992px) {
+    .table-responsive { overflow-x: auto; }
+    table th, table td { white-space: nowrap; font-size: 13px; }
 }
-
-.btn-sm i{
-    margin-right:4px;
+@media (max-width: 576px) {
+    table th, table td { font-size: 12px; padding: 0.35rem; }
+    .btn-sm { font-size: 12px; padding: 4px 6px; }
 }
-
-.alert{
-    border-radius:12px;
-    font-size:14px;
-}
-
-.fw-medium{
-    font-weight:500;
-}
-
-@media (max-width:992px){
-
-    .table-responsive{
-        overflow-x:auto;
-    }
-
-    table th,table td{
-        white-space:nowrap;
-        font-size:13px;
-    }
-
-}
-
-@media (max-width:576px){
-
-    table th,table td{
-        font-size:12px;
-        padding:0.35rem;
-    }
-
-    .btn-sm{
-        font-size:12px;
-        padding:4px 6px;
-    }
-
-}
-
 </style>
 
 @endsection

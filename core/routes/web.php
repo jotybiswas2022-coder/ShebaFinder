@@ -25,7 +25,8 @@ Route::controller(SiteController::class)->group(function () {
 Route::middleware('auth')->prefix('/profile')->controller(ProfileController::class)->group(function () {
     Route::get('/', 'index');               
     Route::get('/edit',  'edit');
-    Route::post('/update', 'update');
+    Route::put('/update', 'update');
+    Route::post('/update', 'update'); // AJAX method spoofing fallback
 });
 
 

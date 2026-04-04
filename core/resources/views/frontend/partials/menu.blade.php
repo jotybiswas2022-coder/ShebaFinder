@@ -29,6 +29,13 @@
                     </a>
                 </li>
 
+                <!-- Profile -->
+                <li class="nav-item">
+                    <a class="nav-link top-nav-link {{ request()->is('profile') ? 'active-link' : '' }}" href="{{ url('/profile') }}">
+                        <i class="bi bi-person me-1"></i> Profile
+                    </a>
+                </li>
+
                 <!-- contact -->
                 <li class="nav-item">
                     <a class="nav-link top-nav-link {{ request()->is('contact') ? 'active-link' : '' }}" href="{{ url('/contact') }}">

@@ -258,9 +258,12 @@ CREATE TABLE `password_reset_tokens` (
 
 CREATE TABLE `posts` (
   `id` bigint(20) UNSIGNED NOT NULL,
+  `user_id` bigint(20) UNSIGNED DEFAULT NULL,
   `title` varchar(255) NOT NULL,
   `category_id` int(11) NOT NULL,
   `details` longtext DEFAULT NULL,
+  `contact_number` varchar(20) NOT NULL DEFAULT '',
+  `division` varchar(100) NOT NULL DEFAULT '',
   `file` varchar(255) DEFAULT NULL,
   `status` tinyint(4) NOT NULL DEFAULT 1,
   `created_at` timestamp NULL DEFAULT NULL,

@@ -64,13 +64,16 @@
                                 <option value="Chittagong" {{ $post->division == 'Chittagong' ? 'selected' : '' }}>Chittagong</option>
                                 <option value="Rajshahi" {{ $post->division == 'Rajshahi' ? 'selected' : '' }}>Rajshahi</option>
                                 <option value="Sylhet" {{ $post->division == 'Sylhet' ? 'selected' : '' }}>Sylhet</option>
+                                <option value="Barishal" {{ $post->division == 'Barishal' ? 'selected' : '' }}>Barishal</option>
+                                <option value="Mymensingh" {{ $post->division == 'Mymensingh' ? 'selected' : '' }}>Mymensingh</option>
+                                <option value="Rangpur" {{ $post->division == 'Rangpur' ? 'selected' : '' }}>Rangpur</option>
                             </select>
                         </div>
 
                         <!-- Status -->
                         <div class="col-md-6">
                             <label class="form-label fw-semibold">Status</label>
-                            <select name="status" class="form-select" required>
+                            <select name="status" class="form-select">
                                 <option value="1" {{ $post->status == 1 ? 'selected' : '' }}>Active</option>
                                 <option value="0" {{ $post->status == 0 ? 'selected' : '' }}>Inactive</option>
                             </select>
@@ -79,7 +82,7 @@
                         <!-- File Upload -->
                         <div class="col-md-6">
                             <label class="form-label fw-semibold"> Profile Image </label>
-                            <input type="file" class="form-control" id="editFile{{ $post->id }}" name="file" accept="image/*,video/mp4">
+                            <input type="file" class="form-control" id="editFile{{ $post->id }}" name="file" accept="image/*">
 
                             @if($post->file)
                             <div class="mt-2">
@@ -142,27 +145,6 @@
                 </div>
 
             </form>
-        </div>
-    </div>
-</div>
-
-<!-- MEDIA MODAL -->
-<div class="modal fade" id="mediaModal" tabindex="-1">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content border-0 shadow-lg rounded-4">
-
-            <div class="modal-header">
-                <h5 class="modal-title">Media Preview</h5>
-                <button class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-
-            <div class="modal-body text-center">
-                <img id="mediaImage" class="img-fluid d-none" style="max-height:500px;">
-                <video id="mediaVideo" class="img-fluid d-none" controls style="max-height:500px;">
-                    <source id="mediaVideoSource">
-                </video>
-            </div>
-
         </div>
     </div>
 </div>

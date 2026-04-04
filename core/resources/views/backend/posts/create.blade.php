@@ -78,6 +78,9 @@
                             <option value="Chittagong">Chittagong</option>
                             <option value="Rajshahi">Rajshahi</option>
                             <option value="Sylhet">Sylhet</option>
+                            <option value="Barishal">Barishal</option>
+                            <option value="Mymensingh">Mymensingh</option>
+                            <option value="Rangpur">Rangpur</option>
                         </select>
                     </div>
 
@@ -87,7 +90,7 @@
                             <i class="bi bi-list-check me-1 text-secondary"></i>
                             Status <span class="text-danger">*</span>
                         </label>
-                        <select name="status" class="form-select" required>
+                        <select name="status" class="form-select">
                             <option value="">Select Status</option>
                             <option value="1">Active</option>
                             <option value="0">Inactive</option>
@@ -104,7 +107,7 @@
                                class="form-control"
                                name="file"
                                id="file"
-                               accept="image/*,video/mp4"
+                               accept="image/*"
                                required>
 
                         <div class="mt-3">
