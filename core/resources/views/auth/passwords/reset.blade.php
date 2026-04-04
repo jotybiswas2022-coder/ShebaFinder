@@ -1,6 +1,6 @@
 @extends('frontend.auth_layout')
 
-@section('title', 'News Portal')
+@section('title', 'Reset Password - ShebaFinder')
 
 @section('content')
 <div class="login-container">

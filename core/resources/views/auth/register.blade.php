@@ -1,6 +1,6 @@
 @extends('frontend.auth_layout')
 
-@section('title', 'Register - News Portal')
+@section('title', 'Register - ShebaFinder')
 
 @section('content')
 @include('frontend.auth.register')

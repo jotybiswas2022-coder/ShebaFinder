@@ -1,22 +1,48 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'News Portal')</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-    <!-- Google Fonts for Login -->
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800;900&family=Old+Standard+TT:wght@400;700&family=Roboto:wght@300;400;500;700&family=UnifrakturMaguntia&display=swap" rel="stylesheet">
-    <!-- Google Fonts for Register -->
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800;900&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700&family=UnifrakturMaguntia&display=swap" rel="stylesheet">
+    <title>ShebaFinder — @yield('title', 'লগইন')</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563EB; --accent: #22C55E;
+            --gray-800: #1E293B; --gray-100: #F1F5F9;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--gray-100); min-height: 100vh; display: flex; flex-direction: column; }
+        a { text-decoration: none; }
+
+        .sf-auth-nav {
+            background: white; padding: 14px 24px;
+            border-bottom: 2px solid var(--primary);
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .sf-auth-brand { display: flex; align-items: center; gap: 10px; }
+        .sf-auth-brand-icon {
+            width: 38px; height: 38px; border-radius: 10px;
+            background: linear-gradient(135deg, var(--primary), #1d4ed8);
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 18px;
+        }
+        .sf-auth-brand span { font-size: 20px; font-weight: 800; color: var(--gray-800); }
+        .sf-auth-brand span span { color: var(--accent); }
+    </style>
 </head>
 <body>
-@yield('content')
-<!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <nav class="sf-auth-nav">
+        <a href="{{ url('/') }}" class="sf-auth-brand">
+            <div class="sf-auth-brand-icon"><i class="bi bi-search-heart-fill"></i></div>
+            <span>Sheba<span>Finder</span></span>
+        </a>
+        <a href="{{ url('/') }}" class="btn btn-sm" style="color:#2563EB;font-weight:600;display:flex;align-items:center;gap:6px;">
+            <i class="bi bi-house-fill"></i> হোমে ফিরুন
+        </a>
+    </nav>
+    @yield('content')
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
