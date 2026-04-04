@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SiteController;
 use App\Http\Controllers\user\UserController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\user\ProfileController;
 
 
 
@@ -19,6 +20,14 @@ Route::controller(SiteController::class)->group(function () {
     Route::get('/post/{id}', 'post')->name('post.show');
     Route::get('/contact', 'contact')->name('contact');
 });
+
+//Profile
+Route::middleware('auth')->prefix('/profile')->controller(ProfileController::class)->group(function () {
+    Route::get('/', 'index');               
+    Route::get('/edit',  'edit');
+    Route::post('/update', 'update');
+});
+
 
 Route::get('/password/reset', [ForgotPasswordController::class, 'showLinkRequestForm'])
     ->name('password.request');
