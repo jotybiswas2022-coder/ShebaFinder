@@ -978,7 +978,7 @@
                             </div>
                             <div class="sf-info-content">
                                 <div class="sf-info-label">বিভাগ / Category</div>
-                                <div class="sf-info-value">{{ $post->PostCategory->name ?? 'বিভাগ নেই' }}</div>
+                                <div class="sf-info-value">{{ $post->PostCategory->name ?? 'ক্যাটাগরি নেই' }}</div>
                             </div>
                         </div>
 
@@ -1067,12 +1067,8 @@
                             <h6 class="sf-related-title">{{ $otherpost->title }}</h6>
                             <div class="sf-rel-meta">
                                 <span>
-                                    <i class="bi bi-calendar3"></i>
-                                    {{ \Carbon\Carbon::parse($otherpost->created_at)->timezone('Asia/Dhaka')->format('d M Y') }}
-                                </span>
-                                <span>
-                                    <i class="bi bi-clock"></i>
-                                    {{ \Carbon\Carbon::parse($otherpost->created_at)->timezone('Asia/Dhaka')->format('h:i A') }}
+                                    <i class="bi bi-tag"></i>
+                                    {{ $otherpost->PostCategory->name ?? 'ক্যাটাগরি নেই' }}
                                 </span>
                             </div>
                         </div>
